@@ -576,6 +576,15 @@ class Action(object):
         if s["service"] == "urn:upnp-org:serviceId:HVAC_UserOperatingMode1":
             return HeatingAction.parse(vera, s)
 
+        # Don't trigger a RuntimeError on these services, even though we don't
+        # know what to do with them.
+        if s["service"] in (
+            "urn:micasaverde-com:serviceId:HaDevice1",
+            "urn:micasaverde-com:serviceId:HomeAutomationGateway1",
+            "urn:upnp-org:serviceId:VSwitch1",
+        ):
+            return
+
         raise RuntimeError, "Don't know how to handle service %s" % \
             s["service"]
 
