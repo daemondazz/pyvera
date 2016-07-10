@@ -586,6 +586,62 @@ class Action(object):
     def __eq__(self, obj):
         return self.__dict__ == obj.__dict__ and type(self) == type(obj)
 
+class PresenceAction(Action):
+    """
+    An action, which changes the 'presence' flag of a PresenceSensor.
+    """
+
+    def __init__(self, device=None, value=None):
+        """
+        Creates a PresenceAction object.
+        :param device: Device object specifying the device
+        :param value: present value, a boolean
+        """
+        self.device = device
+        self.value = value
+
+    def output(self):
+        """
+        Formats the value in a format suitable for LUUP comms.
+        """
+        return {
+            "device": self.device.id,
+            "action": "SetPresent",
+            "arguments": [
+                {
+                    "name": "newPresentValue",
+                    "value": self.value
+                }
+            ],
+            "service": "urn:afoyi-com:serviceId:PresenceSensor1"
+        }
+
+    def invoke(self):
+        """
+        Immediately invoke the action
+        :return: a Job object, describing the job implementing the action.
+        """
+        base="data_request?id=action"
+        action = "SetPresent"
+        svc = "urn:afoyi-com:serviceId:PresenceSensor1"
+        path = "%s&DeviceNum=%d&serviceId=%s&action=%s&newPresentValue=%d&output_format=json" \
+               % (base, self.device.id, svc, action, self.value)
+        status = self.device.vera.get(path)
+
+        return status["u:SetPresentResponse"]["OK"] == 'OK'
+
+    @staticmethod
+    def parse(vera, s):
+        """
+        Converts LUUP SetPresence action values to a PresenceAction object.
+
+        :param s: Value from LUUP comms.
+        """
+        ha = PresenceAction()
+        ha.device = vera.get_device_by_id(s["device"])
+        ha.value = s["arguments"][0]["value"]
+        return ha
+
 class SetpointAction(Action):
     """
     An action, which changes the 'set point' of a thermostat.
@@ -1163,6 +1219,15 @@ class Device(object):
             raise RuntimeError, "Device doesn't support the service"
 
         return self.get_variable(svc, "BatteryLevel")
+
+    def set_present(self, value):
+        """
+        Changes the setting of a presence device.
+
+        :param value: new value, boolean
+        """
+        act = PresenceAction(self, value)
+        return act.invoke()
 
     def set_switch(self, value):
         """
