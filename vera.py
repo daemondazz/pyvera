@@ -579,9 +579,12 @@ class Action(object):
         # Don't trigger a RuntimeError on these services, even though we don't
         # know what to do with them.
         if s["service"] in (
+            "urn:futzle-com:serviceId:CountdownTimer1",
             "urn:micasaverde-com:serviceId:Color1",
+            "urn:micasaverde-com:serviceId:DoorLock1",
             "urn:micasaverde-com:serviceId:HaDevice1",
             "urn:micasaverde-com:serviceId:HomeAutomationGateway1",
+            "urn:micasaverde-com:serviceId:MediaNavigation1",
             "urn:toggledbits-com:serviceId:DeusExMachinaII1",
             "urn:upnp-org:serviceId:altui1",
             "urn:upnp-org:serviceId:VSwitch1",
