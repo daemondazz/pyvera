@@ -967,8 +967,9 @@ class SceneDefinition(object):
         
         sd.name = s["name"]
 
-        for i in s["triggers"]:
-            sd.triggers.append(Trigger.parse(vera, i))
+        if s.has_key("triggers"):
+            for i in s["triggers"]:
+                sd.triggers.append(Trigger.parse(vera, i))
 
         if s.has_key("timers"):
             for i in s["timers"]:
