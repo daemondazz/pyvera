@@ -576,23 +576,10 @@ class Action(object):
         if s["service"] == "urn:upnp-org:serviceId:HVAC_UserOperatingMode1":
             return HeatingAction.parse(vera, s)
 
-        # Don't trigger a RuntimeError on these services, even though we don't
-        # know what to do with them.
-        if s["service"] in (
-            "urn:futzle-com:serviceId:CountdownTimer1",
-            "urn:micasaverde-com:serviceId:Color1",
-            "urn:micasaverde-com:serviceId:DoorLock1",
-            "urn:micasaverde-com:serviceId:HaDevice1",
-            "urn:micasaverde-com:serviceId:HomeAutomationGateway1",
-            "urn:micasaverde-com:serviceId:MediaNavigation1",
-            "urn:toggledbits-com:serviceId:DeusExMachinaII1",
-            "urn:upnp-org:serviceId:altui1",
-            "urn:upnp-org:serviceId:VSwitch1",
-        ):
-            return
-
-        raise RuntimeError, "Don't know how to handle service %s" % \
-            s["service"]
+        # Don't trigger a runtime error for unknown services, as almost
+        # every plugin and device defines a new plugin type
+#        raise RuntimeError, "Don't know how to handle service %s" % \
+#            s["service"]
 
     parse = staticmethod(parse)
 
