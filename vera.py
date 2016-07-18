@@ -576,8 +576,10 @@ class Action(object):
         if s["service"] == "urn:upnp-org:serviceId:HVAC_UserOperatingMode1":
             return HeatingAction.parse(vera, s)
 
-        raise RuntimeError, "Don't know how to handle service %s" % \
-            s["service"]
+        # Don't trigger a runtime error for unknown services, as almost
+        # every plugin and device defines a new plugin type
+#        raise RuntimeError, "Don't know how to handle service %s" % \
+#            s["service"]
 
     parse = staticmethod(parse)
 
